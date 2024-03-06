@@ -1,0 +1,117 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       Int    @id @default(autoincrement())
+  name     String @db.VarChar(255)
+  email    String @unique @db.VarChar(255)
+  password String @db.VarChar(255)
+  token    String @db.VarChar(255)
+
+  categories   Category[]
+  transactions Transaction[]
+
+  wallet Wallet?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+model MasterCategoryTransaction {
+  id   Int    @id @default(autoincrement())
+  name String @db.VarChar(255)
+
+  categories Category[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("master_category_transactions")
+}
+
+model Category {
+  id   Int    @id @default(autoincrement())
+  name String @db.VarChar(255)
+
+  userId Int?
+  user   User? @relation(fields: [userId], references: [id])
+
+  masterCategoryTransactionId Int?
+  masterCategoryTransaction   MasterCategoryTransaction? @relation(fields: [masterCategoryTransactionId], references: [id])
+
+  subCategories SubCategory[]
+  transactions  Transaction[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("categories")
+}
+
+model SubCategory {
+  id   Int    @id @default(autoincrement())
+  name String @db.VarChar(255)
+
+  transactions Transaction[]
+
+  categoryId Int?
+  category   Category? @relation(fields: [categoryId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("sub_categories")
+}
+
+model Wallet {
+  id      Int    @id @default(autoincrement())
+  name    String @db.VarChar(255)
+  balance BigInt
+
+  transactions Transaction[]
+
+  userId Int?  @unique
+  user   User? @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("wallets")
+}
+
+model Transaction {
+  id      Int    @id @default(autoincrement())
+  name    String @db.VarChar(255)
+  balance BigInt
+
+  userId Int?  @unique
+  user   User? @relation(fields: [userId], references: [id])
+
+  walletId Int?    @unique
+  wallet   Wallet? @relation(fields: [walletId], references: [id])
+
+  subCategoryId Int?         @unique
+  subCategory   SubCategory? @relation(fields: [subCategoryId], references: [id])
+
+  categoryId Int?      @unique
+  category   Category? @relation(fields: [categoryId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("transactions")
+}
