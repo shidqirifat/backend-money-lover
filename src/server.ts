@@ -1,11 +1,13 @@
 import express, { type Request, type Response } from 'express'
 import publicRouter from '@/routes/public-api'
 import { errorMiddleware } from './middleware/error-middleware'
+import apiRouter from './routes/api'
 
 const app = express()
 
 app.use(express.json())
 app.use(publicRouter)
+app.use(apiRouter)
 app.use(errorMiddleware)
 
 app.get('/api', (req: Request, res: Response) => {

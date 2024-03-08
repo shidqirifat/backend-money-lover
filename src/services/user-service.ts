@@ -6,6 +6,7 @@ import db from '@/utils/prisma'
 import { generateToken } from '@/utils/token'
 import { UserValidation } from '@/validations/user'
 import { Validation } from '@/validations/validation'
+import { type User } from '@prisma/client'
 
 export class UserService {
   static async register (request: RegisterRequest): Promise<AuthResponse> {
@@ -53,5 +54,12 @@ export class UserService {
     })
 
     return toAuthResponse(authUser)
+  }
+
+  static async logout (user: User) {
+    await db.user.update({
+      where: { id: user.id },
+      data: { token: '' }
+    })
   }
 }

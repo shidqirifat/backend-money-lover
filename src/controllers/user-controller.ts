@@ -1,5 +1,6 @@
-import type { RegisterRequest, LoginRequest } from '@/models/user'
+import type { RegisterRequest, LoginRequest, AuthRequest } from '@/models/user'
 import { UserService } from '@/services/user-service'
+import { type User } from '@prisma/client'
 import type { NextFunction, Request, Response } from 'express'
 
 export class UserController {
@@ -21,6 +22,17 @@ export class UserController {
       const response = await UserService.login(request)
       res.status(200).json({
         data: response
+      })
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  static async logout (req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      await UserService.logout(req.user as User)
+      res.status(200).json({
+        data: 'Successfully logout'
       })
     } catch (error) {
       next(error)
