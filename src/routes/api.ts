@@ -1,3 +1,4 @@
+import { MasterCategoryController } from '@/controllers/master-category-controller'
 import { UserController } from '@/controllers/user-controller'
 import { WalletController } from '@/controllers/wallet-contoller'
 import { authMiddleware } from '@/middleware/auth-middleware'
@@ -14,5 +15,8 @@ apiRouter.post('/api/auth/logout', UserController.logout)
 // WALLET
 apiRouter.get('/api/wallets', WalletController.getAll)
 apiRouter.put('/api/wallets/:id', WalletController.updateBalance)
+
+// MASTER CATEGORY
+apiRouter.get('/api/master-categories', MasterCategoryController.getAll)
 
 export default apiRouter
