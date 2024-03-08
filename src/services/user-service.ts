@@ -1,13 +1,37 @@
 import { ResponseError } from '@/errors/response-error'
-import { toLoginResponse, type LoginRequest, type LoginResponse } from '@/models/user'
-import { comparePassword } from '@/utils/hash'
+import { toAuthResponse } from '@/models/user'
+import type { AuthResponse, LoginRequest, RegisterRequest } from '@/models/user'
+import { comparePassword, hashPassword } from '@/utils/hash'
 import db from '@/utils/prisma'
 import { generateToken } from '@/utils/token'
 import { UserValidation } from '@/validations/user'
 import { Validation } from '@/validations/validation'
 
 export class UserService {
-  static async login (request: LoginRequest): Promise<LoginResponse> {
+  static async register (request: RegisterRequest): Promise<AuthResponse> {
+    const validateReq = Validation.validate(UserValidation.REGISTER, request)
+
+    const user = await db.user.findUnique({
+      where: { email: validateReq.email }
+    })
+
+    if (user) throw new ResponseError(400, 'Email is registered')
+
+    const encryptPassword = await hashPassword(validateReq.password)
+
+    const authUser = await db.user.create({
+      data: {
+        name: validateReq.name,
+        email: validateReq.email,
+        password: encryptPassword,
+        token: generateToken()
+      }
+    })
+
+    return toAuthResponse(authUser)
+  }
+
+  static async login (request: LoginRequest): Promise<AuthResponse> {
     const validateReq = Validation.validate(UserValidation.LOGIN, request)
 
     const user = await db.user.findUnique({
@@ -28,6 +52,6 @@ export class UserService {
       }
     })
 
-    return toLoginResponse(authUser)
+    return toAuthResponse(authUser)
   }
 }

@@ -5,13 +5,17 @@ export type LoginRequest = {
   password: string
 }
 
-export type LoginResponse = {
+export type AuthResponse = {
   name: string
   email: string
   token: string
 }
 
-export function toLoginResponse (user: User): LoginResponse {
+export interface RegisterRequest extends LoginRequest {
+  name: string
+}
+
+export function toAuthResponse (user: User): AuthResponse {
   return {
     name: user.name,
     email: user.email,
