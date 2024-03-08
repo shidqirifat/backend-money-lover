@@ -28,11 +28,11 @@ export class WalletService {
 
     if (!wallet) throw new ResponseError(400, 'The wallet is not exist')
 
-    await db.wallet.update({
+    const walletAfter = await db.wallet.update({
       where: { id: params.id, userId: request.user?.id },
-      data: { balance: validateReq.balance }
+      data: { ...validateReq }
     })
 
-    return toWalletResponse(wallet)
+    return toWalletResponse(walletAfter)
   }
 }
