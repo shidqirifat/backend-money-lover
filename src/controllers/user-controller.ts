@@ -28,6 +28,17 @@ export class UserController {
     }
   }
 
+  static async get (req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const response = await UserService.get(req.user as User)
+      res.status(200).json({
+        data: response
+      })
+    } catch (error) {
+      next(error)
+    }
+  }
+
   static async logout (req: AuthRequest, res: Response, next: NextFunction) {
     try {
       await UserService.logout(req.user as User)

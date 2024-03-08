@@ -56,6 +56,10 @@ export class UserService {
     return toAuthResponse(authUser)
   }
 
+  static async get (user: User): Promise<AuthResponse> {
+    return toAuthResponse(user)
+  }
+
   static async logout (user: User) {
     await db.user.update({
       where: { id: user.id },

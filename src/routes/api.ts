@@ -6,6 +6,8 @@ const apiRouter = express.Router()
 
 apiRouter.use(authMiddleware)
 
+apiRouter.get('/api/auth', UserController.get)
+
 apiRouter.post('/api/auth/logout', UserController.logout)
 
 export default apiRouter
