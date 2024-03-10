@@ -29,5 +29,6 @@ apiRouter.delete('/api/categories/:id', CategoryController.delete)
 
 // SUB CATEGORY
 apiRouter.post('/api/sub-categories', SubCategoryController.create)
+apiRouter.put('/api/sub-categories/:id', SubCategoryController.update)
 
 export default apiRouter

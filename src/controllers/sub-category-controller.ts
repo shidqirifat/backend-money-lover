@@ -13,4 +13,13 @@ export class SubCategoryController {
       next(error)
     }
   }
+
+  static async update (req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const response = await SubCategoryService.update(req)
+      res.status(200).json({ data: response })
+    } catch (error) {
+      next(error)
+    }
+  }
 }

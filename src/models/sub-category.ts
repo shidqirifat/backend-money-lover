@@ -10,6 +10,10 @@ export type CreateSubCategoryRequest = {
   categoryId: number
 }
 
+export interface UpdateSubCategoryRequest extends CreateSubCategoryRequest {
+  id: number
+}
+
 export const toSubCategoryResponse = (subCategory: SubCategory): SubCategoryResponse => {
   return {
     id: subCategory.id,

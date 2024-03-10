@@ -1,5 +1,6 @@
 import { ResponseError } from '@/errors/response-error'
-import { toSubCategoryResponse, type CreateSubCategoryRequest } from '@/models/sub-category'
+import { toSubCategoryResponse, type CreateSubCategoryRequest, type UpdateSubCategoryRequest } from '@/models/sub-category'
+import { type AuthRequest } from '@/models/user'
 import db from '@/utils/prisma'
 import { SubCategoryValidation } from '@/validations/sub-category'
 import { Validation } from '@/validations/validation'
@@ -23,6 +24,26 @@ export class SubCategoryService {
     if (subCategoryBefore) throw new ResponseError(400, 'Sub category name is already exist in the same category')
 
     const subCategory = await db.subCategory.create({
+      data: { ...validateReq }
+    })
+
+    return toSubCategoryResponse(subCategory)
+  }
+
+  static async update (request: AuthRequest) {
+    const body = request.body as UpdateSubCategoryRequest
+    const params = { id: Number(request.params.id) }
+
+    const validateReq = Validation.validate(SubCategoryValidation.UPDATE_SUB_CATEGORY, body)
+
+    const subCategoryBefore = await db.subCategory.findFirst({
+      where: { id: params.id }
+    })
+
+    if (!subCategoryBefore) throw new ResponseError(400, 'Sub category is not found')
+
+    const subCategory = await db.subCategory.update({
+      where: { id: params.id },
       data: { ...validateReq }
     })
 
