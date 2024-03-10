@@ -29,7 +29,7 @@ export class CategoryService {
     if (!masterCategory) throw new ResponseError(400, 'Master category is not found')
 
     const categoryBefore = await db.category.findFirst({
-      where: { ...validateReq }
+      where: { AND: { ...validateReq } }
     })
     if (categoryBefore) throw new ResponseError(400, 'Category name is already in use in the same master category')
 
@@ -56,9 +56,11 @@ export class CategoryService {
 
     const categoryBefore = await db.category.findFirst({
       where: {
-        id: params.id,
-        userId: request.user?.id,
-        masterCategoryTransactionId: validateReq.masterCategoryTransactionId
+        AND: {
+          id: params.id,
+          userId: request.user?.id,
+          masterCategoryTransactionId: validateReq.masterCategoryTransactionId
+        }
       }
     })
     if (!categoryBefore) throw new ResponseError(400, 'Category is not found')
@@ -76,8 +78,10 @@ export class CategoryService {
   static async delete (user: User, id: number) {
     const categoryBefore = await db.category.findFirst({
       where: {
-        id,
-        userId: user.id
+        AND: {
+          id,
+          userId: user.id
+        }
       }
     })
     if (!categoryBefore) throw new ResponseError(400, 'Category is not found')
