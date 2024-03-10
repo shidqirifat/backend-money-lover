@@ -11,13 +11,9 @@ export interface MasterCategoryAndCategory extends Category {
 
 export type GroupCategoryByMasterCategory = Record<string, MasterCategoryAndCategory[]>
 
-export type CreateCategoryRequest = {
+export type CategoryRequest = {
   name: string
   masterCategoryTransactionId: number
-}
-
-export interface UpdateCategoryRequest extends CreateCategoryRequest {
-  id: number
 }
 
 export const groupCategoryByMasterCategory = (categories: MasterCategoryAndCategory[]): GroupCategoryByMasterCategory => {

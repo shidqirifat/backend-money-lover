@@ -1,5 +1,5 @@
 import { ResponseError } from '@/errors/response-error'
-import { type CreateCategoryRequest, groupCategoryByMasterCategory, toCategoryResponse, type UpdateCategoryRequest } from '@/models/category'
+import { type CategoryRequest, groupCategoryByMasterCategory, toCategoryResponse } from '@/models/category'
 import { type AuthRequest } from '@/models/user'
 import db from '@/utils/prisma'
 import { CategoryValidation } from '@/validations/category'
@@ -9,9 +9,7 @@ import { type User } from '@prisma/client'
 export class CategoryService {
   static async getCategoriesByUser (user: User) {
     const categories = await db.category.findMany({
-      where: {
-        userId: user.id
-      },
+      where: { userId: user.id },
       include: {
         masterCategoryTransaction: true
       }
@@ -20,7 +18,7 @@ export class CategoryService {
     return groupCategoryByMasterCategory(categories)
   }
 
-  static async create (user: User, req: CreateCategoryRequest) {
+  static async create (user: User, req: CategoryRequest) {
     const validateReq = Validation.validate(CategoryValidation.CREATE_CATEGORY, req)
 
     const masterCategory = await db.masterCategoryTransaction.findFirst({
@@ -45,7 +43,7 @@ export class CategoryService {
   }
 
   static async update (request: AuthRequest) {
-    const body = request.body as UpdateCategoryRequest
+    const body = request.body as CategoryRequest
     const params = { id: Number(request.params.id) }
     const validateReq = Validation.validate(CategoryValidation.UPDATE_CATEGORY, body)
 
@@ -58,8 +56,7 @@ export class CategoryService {
       where: {
         AND: {
           id: params.id,
-          userId: request.user?.id,
-          masterCategoryTransactionId: validateReq.masterCategoryTransactionId
+          userId: request.user?.id
         }
       }
     })

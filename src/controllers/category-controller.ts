@@ -1,4 +1,4 @@
-import type { CreateCategoryRequest } from '@/models/category'
+import type { CategoryRequest } from '@/models/category'
 import { type AuthRequest } from '@/models/user'
 import { CategoryService } from '@/services/category-service'
 import { type User } from '@prisma/client'
@@ -16,7 +16,7 @@ export class CategoryController {
 
   static async create (req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      const request = req.body as CreateCategoryRequest
+      const request = req.body as CategoryRequest
       const response = await CategoryService.create(req.user as User, request)
       res.status(200).json({ data: response })
     } catch (error) {
