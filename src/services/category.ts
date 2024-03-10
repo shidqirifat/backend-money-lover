@@ -72,4 +72,18 @@ export class CategoryService {
 
     return toCategoryResponse(category)
   }
+
+  static async delete (user: User, id: number) {
+    const categoryBefore = await db.category.findFirst({
+      where: {
+        id,
+        userId: user.id
+      }
+    })
+    if (!categoryBefore) throw new ResponseError(400, 'Category is not found')
+
+    await db.category.delete({ where: { id } })
+
+    return 'Category has successfully deleted'
+  }
 }

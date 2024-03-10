@@ -24,5 +24,6 @@ apiRouter.get('/api/master-categories', MasterCategoryController.getAll)
 apiRouter.get('/api/categories', CategoryController.getCategoriesByUser)
 apiRouter.post('/api/categories', CategoryController.create)
 apiRouter.put('/api/categories/:id', CategoryController.update)
+apiRouter.delete('/api/categories/:id', CategoryController.delete)
 
 export default apiRouter
