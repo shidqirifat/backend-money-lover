@@ -1,3 +1,4 @@
+import { CategoryController } from '@/controllers/category-controller'
 import { MasterCategoryController } from '@/controllers/master-category-controller'
 import { UserController } from '@/controllers/user-controller'
 import { WalletController } from '@/controllers/wallet-contoller'
@@ -18,5 +19,8 @@ apiRouter.put('/api/wallets/:id', WalletController.updateBalance)
 
 // MASTER CATEGORY
 apiRouter.get('/api/master-categories', MasterCategoryController.getAll)
+
+// CATEGORY
+apiRouter.get('/api/categories', CategoryController.getCategoriesByUser)
 
 export default apiRouter
