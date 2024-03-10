@@ -5,13 +5,9 @@ export type SubCategoryResponse = {
   name: string
 }
 
-export type CreateSubCategoryRequest = {
+export type SubCategoryRequest = {
   name: string
   categoryId: number
-}
-
-export interface UpdateSubCategoryRequest extends CreateSubCategoryRequest {
-  id: number
 }
 
 export const toSubCategoryResponse = (subCategory: SubCategory): SubCategoryResponse => {

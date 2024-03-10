@@ -1,12 +1,12 @@
 import { ResponseError } from '@/errors/response-error'
-import { toSubCategoryResponse, type CreateSubCategoryRequest, type UpdateSubCategoryRequest } from '@/models/sub-category'
+import { toSubCategoryResponse, type SubCategoryRequest } from '@/models/sub-category'
 import { type AuthRequest } from '@/models/user'
 import db from '@/utils/prisma'
 import { SubCategoryValidation } from '@/validations/sub-category'
 import { Validation } from '@/validations/validation'
 
 export class SubCategoryService {
-  static async create (req: CreateSubCategoryRequest) {
+  static async create (req: SubCategoryRequest) {
     const validateReq = Validation.validate(SubCategoryValidation.CREATE_SUB_CATEGORY, req)
 
     const category = await db.category.findFirst({
@@ -31,7 +31,7 @@ export class SubCategoryService {
   }
 
   static async update (request: AuthRequest) {
-    const body = request.body as UpdateSubCategoryRequest
+    const body = request.body as SubCategoryRequest
     const params = { id: Number(request.params.id) }
 
     const validateReq = Validation.validate(SubCategoryValidation.UPDATE_SUB_CATEGORY, body)
