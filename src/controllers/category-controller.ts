@@ -1,6 +1,6 @@
 import type { CreateCategoryRequest } from '@/models/category'
 import { type AuthRequest } from '@/models/user'
-import { CategoryService } from '@/services/category'
+import { CategoryService } from '@/services/category-service'
 import { type User } from '@prisma/client'
 import type { NextFunction, Response } from 'express'
 

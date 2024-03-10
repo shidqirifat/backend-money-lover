@@ -1,5 +1,6 @@
 import { CategoryController } from '@/controllers/category-controller'
 import { MasterCategoryController } from '@/controllers/master-category-controller'
+import { SubCategoryController } from '@/controllers/sub-category-controller'
 import { UserController } from '@/controllers/user-controller'
 import { WalletController } from '@/controllers/wallet-contoller'
 import { authMiddleware } from '@/middleware/auth-middleware'
@@ -25,5 +26,8 @@ apiRouter.get('/api/categories', CategoryController.getCategoriesByUser)
 apiRouter.post('/api/categories', CategoryController.create)
 apiRouter.put('/api/categories/:id', CategoryController.update)
 apiRouter.delete('/api/categories/:id', CategoryController.delete)
+
+// SUB CATEGORY
+apiRouter.post('/api/sub-categories', SubCategoryController.create)
 
 export default apiRouter
