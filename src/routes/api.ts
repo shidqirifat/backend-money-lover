@@ -37,5 +37,6 @@ apiRouter.delete('/api/sub-categories/:id', SubCategoryController.delete)
 apiRouter.get('/api/transactions', TransactionController.getAll)
 apiRouter.get('/api/transactions/:id', TransactionController.get)
 apiRouter.post('/api/transactions', TransactionController.create)
+apiRouter.put('/api/transactions/:id', TransactionController.update)
 
 export default apiRouter
