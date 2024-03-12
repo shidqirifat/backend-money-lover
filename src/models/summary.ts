@@ -22,6 +22,17 @@ export type SummaryTransactionResponse = {
   net_income: number
 }
 
+export type CategoryTransactionResponse = {
+  id: number
+  name: string
+  total: number
+}
+
+export type SummaryByCategoryTransactionResponse = {
+  total_transaction: number
+  categories: CategoryTransactionResponse[]
+}
+
 export enum TypeTransaction {
   EXPENSE = 1,
   INCOME = 2
@@ -63,6 +74,30 @@ export const toSummaryTransactionResponse = (transactions: TransactionWithCatego
   }
 
   data.net_income = data.income - data.expense
+
+  return data
+}
+
+export const toSummaryByCategoryTransactionResponse = (transactions: TransactionWithCategory[]): SummaryByCategoryTransactionResponse => {
+  const data: SummaryByCategoryTransactionResponse = {
+    total_transaction: 0,
+    categories: []
+  }
+
+  for (const transaction of transactions) {
+    const indexCategory = data.categories.findIndex(category => category.id === transaction.category.id)
+    if (indexCategory !== -1) data.categories[indexCategory].total += Number(transaction.amount)
+    else {
+      const newCategory: CategoryTransactionResponse = {
+        id: transaction.category.id,
+        name: transaction.category.name,
+        total: Number(transaction.amount)
+      }
+      data.categories.push(newCategory)
+    }
+
+    data.total_transaction += Number(transaction.amount)
+  }
 
   return data
 }
