@@ -13,16 +13,18 @@ export async function seedSubCategory () {
     return
   }
 
+  const subCategoriesBefore = await prisma.subCategory.count()
+
+  if (subCategoriesBefore > 0) {
+    console.log('seed subcategory already execute')
+    return
+  }
+
   const userCategories = await prisma.category.findMany({
     where: {
       user: { id: user.id }
     }
   })
-
-  if (userCategories.length > 0) {
-    console.log('seed subcategory already execute')
-    return
-  }
 
   for (const category of userCategories) {
     if (!SEED_CATEGORIES_EXPENSE.includes(category.name)) continue
