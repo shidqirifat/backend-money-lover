@@ -68,4 +68,29 @@ export class SummaryService {
 
     return toSummaryByCategoryTransactionResponse(transactions as TransactionWithCategory[])
   }
+
+  static async getSummaryIncome (user: User, params: ParamsSummaryTransaction) {
+    const validateParams = Validation.validate(SummaryValidation.GET_SUMMARY_TRANSACTION, params)
+
+    const transactions = await db.transaction.findMany({
+      select: {
+        amount: true,
+        category: true
+      },
+      where: {
+        AND: {
+          userId: user.id,
+          date: {
+            gte: validateParams.startDate,
+            lte: validateParams.endDate
+          },
+          category: {
+            masterCategoryTransactionId: TypeTransaction.INCOME
+          }
+        }
+      }
+    })
+
+    return toSummaryByCategoryTransactionResponse(transactions as TransactionWithCategory[])
+  }
 }

@@ -35,4 +35,14 @@ export class SummaryController {
       next(error)
     }
   }
+
+  static async getSummaryIncome (req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const response = await SummaryService.getSummaryIncome(req.user as User, req.query as ParamsSummaryTransaction)
+
+      res.status(200).type('json').send(json({ data: response }))
+    } catch (error) {
+      next(error)
+    }
+  }
 }

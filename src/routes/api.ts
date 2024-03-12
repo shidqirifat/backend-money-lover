@@ -45,5 +45,6 @@ apiRouter.delete('/api/transactions/:id', TransactionController.delete)
 apiRouter.get('/api/summaries/wallet', SummaryController.getSummaryWallet)
 apiRouter.get('/api/summaries/transaction', SummaryController.getSummaryTransaction)
 apiRouter.get('/api/summaries/transaction/expense', SummaryController.getSummaryExpense)
+apiRouter.get('/api/summaries/transaction/income', SummaryController.getSummaryIncome)
 
 export default apiRouter
