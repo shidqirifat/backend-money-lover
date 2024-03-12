@@ -1,12 +1,32 @@
 import { ResponseError } from '@/errors/response-error'
-import { toTransactionResponse, type TransactionWithRelation, type TransactionRequest } from '@/models/transaction'
+import { toTransactionResponse, type TransactionWithRelation, type TransactionRequest, type TransactionResponse } from '@/models/transaction'
 import db from '@/utils/prisma'
 import { TransactionValidation } from '@/validations/transaction'
 import { Validation } from '@/validations/validation'
 import { type User } from '@prisma/client'
 
 export class TransactionService {
-  static async create (user: User, req: TransactionRequest) {
+  static async get (user: User, id: number): Promise<TransactionResponse> {
+    const transaction = await db.transaction.findFirst({
+      where: {
+        AND: {
+          id,
+          userId: user.id
+        }
+      },
+      include: {
+        wallet: true,
+        category: true,
+        subCategory: true
+      }
+    })
+
+    if (!transaction) throw new ResponseError(400, 'Transaction is not found')
+
+    return toTransactionResponse(transaction as TransactionWithRelation)
+  }
+
+  static async create (user: User, req: TransactionRequest): Promise<TransactionResponse> {
     const validateReq = Validation.validate(TransactionValidation.CREATE_TRANSACTION, req)
 
     const wallet = await db.wallet.findFirst({

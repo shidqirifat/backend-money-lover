@@ -1,13 +1,18 @@
 import type { Wallet, Transaction, Category, SubCategory } from '@prisma/client'
 
+type Entity = {
+  id: number
+  name: string
+}
+
 export type TransactionResponse = {
   id: number
   amount: bigint
   description: string
   date: string
-  wallet: string
-  category: string
-  sub_category: string | null
+  wallet: Entity
+  category: Entity
+  sub_category: Entity | null
 }
 
 export type TransactionRequest = {
@@ -31,8 +36,19 @@ export const toTransactionResponse = (transaction: TransactionWithRelation): Tra
     amount: transaction.amount,
     description: transaction.description,
     date: transaction.date.toISOString(),
-    category: transaction.category.name,
-    sub_category: transaction.subCategory?.name || null,
-    wallet: transaction.wallet?.name
+    category: {
+      id: transaction.category.id,
+      name: transaction.category.name
+    },
+    sub_category: transaction.subCategory?.id
+      ? {
+          id: transaction.subCategory.id,
+          name: transaction.subCategory.name
+        }
+      : null,
+    wallet: {
+      id: transaction.wallet.id,
+      name: transaction.wallet.name
+    }
   }
 }

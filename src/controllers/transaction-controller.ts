@@ -6,6 +6,16 @@ import { type User } from '@prisma/client'
 import type { NextFunction, Response } from 'express'
 
 export class TransactionController {
+  static async get (req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const response = await TransactionService.get(req.user as User, Number(req.params.id))
+
+      res.status(200).type('json').send(json({ data: response }))
+    } catch (error) {
+      next(error)
+    }
+  }
+
   static async create (req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const request = req.body as TransactionRequest
