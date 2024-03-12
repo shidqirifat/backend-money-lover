@@ -46,4 +46,14 @@ export class TransactionController {
       next(error)
     }
   }
+
+  static async delete (req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const response = await TransactionService.delete(req.user as User, Number(req.params.id))
+
+      res.status(200).type('json').send(json({ data: response }))
+    } catch (error) {
+      next(error)
+    }
+  }
 }

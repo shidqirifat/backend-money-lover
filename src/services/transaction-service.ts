@@ -208,4 +208,18 @@ export class TransactionService {
 
     return toTransactionResponse(transactionAfter as TransactionWithRelation)
   }
+
+  static async delete (user: User, id: number): Promise<string> {
+    const transaction = await db.transaction.findFirst({
+      where: { AND: { id, userId: user.id } }
+    })
+
+    if (!transaction) throw new ResponseError(400, 'Transaction is not found')
+
+    await db.transaction.delete({
+      where: { id: transaction.id }
+    })
+
+    return 'Transaction has successfully deleted'
+  }
 }

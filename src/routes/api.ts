@@ -1,6 +1,7 @@
 import { CategoryController } from '@/controllers/category-controller'
 import { MasterCategoryController } from '@/controllers/master-category-controller'
 import { SubCategoryController } from '@/controllers/sub-category-controller'
+import { SummaryController } from '@/controllers/summary-controller'
 import { TransactionController } from '@/controllers/transaction-controller'
 import { UserController } from '@/controllers/user-controller'
 import { WalletController } from '@/controllers/wallet-contoller'
@@ -38,5 +39,9 @@ apiRouter.get('/api/transactions', TransactionController.getAll)
 apiRouter.get('/api/transactions/:id', TransactionController.get)
 apiRouter.post('/api/transactions', TransactionController.create)
 apiRouter.put('/api/transactions/:id', TransactionController.update)
+apiRouter.delete('/api/transactions/:id', TransactionController.delete)
+
+// SUMMARY
+apiRouter.get('/api/summaries/wallet', SummaryController.getSummaryWallet)
 
 export default apiRouter
