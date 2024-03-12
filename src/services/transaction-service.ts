@@ -1,11 +1,39 @@
 import { ResponseError } from '@/errors/response-error'
-import { toTransactionResponse, type TransactionWithRelation, type TransactionRequest, type TransactionResponse } from '@/models/transaction'
+import { toTransactionResponse, type TransactionWithRelation, type TransactionRequest, type TransactionResponse, type ParamsTransaction, toListTransactionResponse } from '@/models/transaction'
 import db from '@/utils/prisma'
 import { TransactionValidation } from '@/validations/transaction'
 import { Validation } from '@/validations/validation'
 import { type User } from '@prisma/client'
 
 export class TransactionService {
+  static async getAll (user: User, params: ParamsTransaction): Promise<TransactionResponse[]> {
+    const validateParams = Validation.validate(TransactionValidation.GET_ALL, params)
+
+    const transactions = await db.transaction.findMany({
+      where: {
+        AND: {
+          userId: user.id,
+          description: {
+            contains: validateParams.keyword
+          },
+          date: {
+            gte: validateParams.startDate,
+            lte: validateParams.endDate
+          }
+        }
+      },
+      orderBy: { date: 'asc' },
+      include: {
+        category: true,
+        subCategory: true
+      }
+    })
+
+    if (transactions.length === 0) return []
+
+    return toListTransactionResponse(transactions as TransactionWithRelation[])
+  }
+
   static async get (user: User, id: number): Promise<TransactionResponse> {
     const transaction = await db.transaction.findFirst({
       where: {
@@ -70,7 +98,7 @@ export class TransactionService {
         description: validateReq.description,
         date: validateReq.date,
         categoryId: validateReq.categoryId,
-        subCategoryId: validateReq.subCategoryId,
+        subCategoryId: validateReq.subCategoryId || null,
         walletId: validateReq.walletId,
         userId: user.id
       }

@@ -10,7 +10,7 @@ export type TransactionResponse = {
   amount: bigint
   description: string
   date: string
-  wallet: Entity
+  wallet?: Entity
   category: Entity
   sub_category: Entity | null
 }
@@ -24,13 +24,19 @@ export type TransactionRequest = {
   walletId: number
 }
 
+export type ParamsTransaction = {
+  startDate: string
+  endDate: string
+  keyword: string
+}
+
 export type TransactionWithRelation = Transaction & {
   wallet: Wallet
   category: Category
   subCategory: SubCategory | null
 }
 
-export const toTransactionResponse = (transaction: TransactionWithRelation): TransactionResponse => {
+const baseTransactionResponse = (transaction: TransactionWithRelation) => {
   return {
     id: transaction.id,
     amount: transaction.amount,
@@ -45,7 +51,17 @@ export const toTransactionResponse = (transaction: TransactionWithRelation): Tra
           id: transaction.subCategory.id,
           name: transaction.subCategory.name
         }
-      : null,
+      : null
+  }
+}
+
+export const toListTransactionResponse = (transactions: TransactionWithRelation[]): TransactionResponse[] => {
+  return transactions.map(transaction => (baseTransactionResponse(transaction)))
+}
+
+export const toTransactionResponse = (transaction: TransactionWithRelation): TransactionResponse => {
+  return {
+    ...baseTransactionResponse(transaction),
     wallet: {
       id: transaction.wallet.id,
       name: transaction.wallet.name
