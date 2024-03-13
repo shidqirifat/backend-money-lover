@@ -126,6 +126,15 @@ export class TransactionService {
       }
     })
 
+    await db.wallet.update({
+      where: { id: transaction.walletId },
+      data: {
+        balance: {
+          increment: validateReq.amount
+        }
+      }
+    })
+
     const transactionAfter = await db.transaction.findFirst({
       where: { id: transaction.id },
       include: {
@@ -197,6 +206,15 @@ export class TransactionService {
       }
     })
 
+    await db.wallet.update({
+      where: { id: transaction.walletId },
+      data: {
+        balance: {
+          increment: validateReq.amount - Number(transactionBefore.amount)
+        }
+      }
+    })
+
     const transactionAfter = await db.transaction.findFirst({
       where: { id: transaction.id },
       include: {
@@ -218,6 +236,15 @@ export class TransactionService {
 
     await db.transaction.delete({
       where: { id: transaction.id }
+    })
+
+    await db.wallet.update({
+      where: { id: transaction.walletId },
+      data: {
+        balance: {
+          decrement: transaction.amount
+        }
+      }
     })
 
     return 'Transaction has successfully deleted'
