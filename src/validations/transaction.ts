@@ -2,8 +2,12 @@ import { z } from 'zod'
 
 export class TransactionValidation {
   static readonly GET_ALL = z.object({
-    startDate: z.string().datetime(),
-    endDate: z.string().datetime(),
+    walletId: z.coerce.number().optional(),
+    categoryId: z.coerce.number().optional(),
+    fromAmount: z.coerce.number().optional(),
+    toAmount: z.coerce.number().optional(),
+    fromDate: z.string().datetime().optional(),
+    toDate: z.string().datetime().optional(),
     keyword: z.string().optional()
   })
 

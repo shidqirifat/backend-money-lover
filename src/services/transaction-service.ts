@@ -18,10 +18,15 @@ export class TransactionService {
     user: User,
     params: ParamsTransaction
   ): Promise<TransactionResponse[]> {
-    const validateParams = Validation.validate(
-      TransactionValidation.GET_ALL,
-      params
-    )
+    const validateParams = Validation.validate(TransactionValidation.GET_ALL, params)
+
+    const optionalParams = () => {
+      const optional: Record<string, number> = {}
+      if (validateParams.categoryId) optional.categoryId = validateParams.categoryId
+      if (validateParams.walletId) optional.walletId = validateParams.walletId
+
+      return optional
+    }
 
     const transactions = await db.transaction.findMany({
       where: {
@@ -31,9 +36,14 @@ export class TransactionService {
             contains: validateParams.keyword
           },
           date: {
-            gte: validateParams.startDate,
-            lte: validateParams.endDate
-          }
+            gte: validateParams.fromDate,
+            lte: validateParams.toDate
+          },
+          amount: {
+            gte: validateParams.fromAmount,
+            lte: validateParams.toAmount
+          },
+          ...optionalParams()
         }
       },
       orderBy: { date: 'asc' },

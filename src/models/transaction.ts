@@ -1,4 +1,6 @@
+import { type TransactionValidation } from '@/validations/transaction'
 import type { Wallet, Transaction, Category, SubCategory } from '@prisma/client'
+import { type z } from 'zod'
 
 type Entity = {
   id: number
@@ -24,11 +26,7 @@ export type TransactionRequest = {
   walletId: number
 }
 
-export type ParamsTransaction = {
-  startDate: string
-  endDate: string
-  keyword: string
-}
+export type ParamsTransaction = z.infer<typeof TransactionValidation.GET_ALL>
 
 export type TransactionWithRelation = Transaction & {
   wallet: Wallet
