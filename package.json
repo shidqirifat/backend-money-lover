@@ -2,12 +2,15 @@
   "name": "backend-money-lover",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/src/server.js",
   "scripts": {
-    "start": "ts-node ./src/server.ts",
+    "start": "node ./dist/src/server.js",
     "dev": "nodemon",
-    "start:prod": "npm run build && node ./dist/src/server.js",
+    "start:prod": "npm run build && npm run start",
     "build": "npx tsc"
+  },
+  "_moduleAliases": {
+    "@": "dist/src"
   },
   "keywords": [],
   "author": "",

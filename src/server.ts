@@ -1,3 +1,4 @@
+import 'module-alias/register'
 import express, { type Request, type Response } from 'express'
 import publicRouter from '@/routes/public-api'
 import { errorMiddleware } from './middleware/error-middleware'
