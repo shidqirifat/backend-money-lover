@@ -1,5 +1,5 @@
 import { type TransactionValidation } from '@/validations/transaction'
-import type { Wallet, Transaction, Category, SubCategory } from '@prisma/client'
+import type { Wallet, Transaction, Category, SubCategory, MasterCategoryTransaction } from '@prisma/client'
 import { type z } from 'zod'
 
 type Entity = {
@@ -12,6 +12,7 @@ export type TransactionResponse = {
   amount: bigint
   description: string
   date: string
+  master_category_transaction: Entity
   wallet?: Entity
   category: Entity
   sub_category: Entity | null
@@ -30,16 +31,26 @@ export type ParamsTransaction = z.infer<typeof TransactionValidation.GET_ALL>
 
 export type TransactionWithRelation = Transaction & {
   wallet: Wallet
-  category: Category
+  category: Category & {
+    masterCategoryTransaction: MasterCategoryTransaction
+  }
   subCategory: SubCategory | null
 }
 
-const baseTransactionResponse = (transaction: TransactionWithRelation) => {
+export const toListTransactionResponse = (transactions: TransactionWithRelation[]): TransactionResponse[] => {
+  return transactions.map(transaction => (toTransactionResponse(transaction)))
+}
+
+export const toTransactionResponse = (transaction: TransactionWithRelation): TransactionResponse => {
   return {
     id: transaction.id,
     amount: transaction.amount,
     description: transaction.description,
     date: transaction.date.toISOString(),
+    master_category_transaction: {
+      id: transaction.category.masterCategoryTransaction.id,
+      name: transaction.category.masterCategoryTransaction.name
+    },
     category: {
       id: transaction.category.id,
       name: transaction.category.name
@@ -49,17 +60,7 @@ const baseTransactionResponse = (transaction: TransactionWithRelation) => {
           id: transaction.subCategory.id,
           name: transaction.subCategory.name
         }
-      : null
-  }
-}
-
-export const toListTransactionResponse = (transactions: TransactionWithRelation[]): TransactionResponse[] => {
-  return transactions.map(transaction => (baseTransactionResponse(transaction)))
-}
-
-export const toTransactionResponse = (transaction: TransactionWithRelation): TransactionResponse => {
-  return {
-    ...baseTransactionResponse(transaction),
+      : null,
     wallet: {
       id: transaction.wallet.id,
       name: transaction.wallet.name

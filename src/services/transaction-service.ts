@@ -48,12 +48,15 @@ export class TransactionService {
       },
       orderBy: { date: 'asc' },
       include: {
-        category: true,
+        wallet: true,
+        category: {
+          include: {
+            masterCategoryTransaction: true
+          }
+        },
         subCategory: true
       }
     })
-
-    if (transactions.length === 0) return []
 
     return toListTransactionResponse(transactions as TransactionWithRelation[])
   }
