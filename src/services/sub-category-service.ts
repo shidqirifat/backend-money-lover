@@ -1,5 +1,8 @@
 import { ResponseError } from '@/errors/response-error'
-import { toSubCategoryResponse, type SubCategoryRequest } from '@/models/sub-category'
+import {
+  toSubCategoryResponse,
+  type SubCategoryRequest
+} from '@/models/sub-category'
 import { type AuthRequest } from '@/models/user'
 import db from '@/utils/prisma'
 import { SubCategoryValidation } from '@/validations/sub-category'
@@ -7,8 +10,35 @@ import { Validation } from '@/validations/validation'
 import { type User } from '@prisma/client'
 
 export class SubCategoryService {
+  static async getAll (user: User) {
+    const categories = await db.category.findMany({
+      select: {
+        id: true,
+        name: true,
+        masterCategoryTransaction: {
+          select: {
+            id: true,
+            name: true
+          }
+        },
+        subCategories: {
+          select: {
+            id: true,
+            name: true
+          }
+        }
+      },
+      where: { userId: user.id }
+    })
+
+    return categories
+  }
+
   static async create (req: SubCategoryRequest) {
-    const validateReq = Validation.validate(SubCategoryValidation.CREATE_SUB_CATEGORY, req)
+    const validateReq = Validation.validate(
+      SubCategoryValidation.CREATE_SUB_CATEGORY,
+      req
+    )
 
     const category = await db.category.findFirst({
       where: { id: validateReq.categoryId }
@@ -17,12 +47,16 @@ export class SubCategoryService {
 
     const subCategoryBefore = await db.subCategory.findFirst({
       where: {
-        AND: [{ ...validateReq }
-        ]
+        AND: [{ ...validateReq }]
       }
     })
 
-    if (subCategoryBefore) throw new ResponseError(400, 'Sub category name is already exist in the same category')
+    if (subCategoryBefore) {
+      throw new ResponseError(
+        400,
+        'Sub category name is already exist in the same category'
+      )
+    }
 
     const subCategory = await db.subCategory.create({
       data: { ...validateReq }
@@ -35,13 +69,18 @@ export class SubCategoryService {
     const body = request.body as SubCategoryRequest
     const params = { id: Number(request.params.id) }
 
-    const validateReq = Validation.validate(SubCategoryValidation.UPDATE_SUB_CATEGORY, body)
+    const validateReq = Validation.validate(
+      SubCategoryValidation.UPDATE_SUB_CATEGORY,
+      body
+    )
 
     const subCategoryBefore = await db.subCategory.findFirst({
       where: { id: params.id }
     })
 
-    if (!subCategoryBefore) throw new ResponseError(400, 'Sub category is not found')
+    if (!subCategoryBefore) {
+      throw new ResponseError(400, 'Sub category is not found')
+    }
 
     const subCategory = await db.subCategory.update({
       where: { id: params.id },
@@ -55,12 +94,16 @@ export class SubCategoryService {
     const subCategoryBefore = await db.subCategory.findFirst({
       where: { id }
     })
-    if (!subCategoryBefore) throw new ResponseError(400, 'Sub category is not found')
+    if (!subCategoryBefore) {
+      throw new ResponseError(400, 'Sub category is not found')
+    }
 
     const isCategoryUser = await db.category.findFirst({
       where: { userId: user.id }
     })
-    if (!isCategoryUser) throw new ResponseError(400, 'Sub category is not found')
+    if (!isCategoryUser) {
+      throw new ResponseError(400, 'Sub category is not found')
+    }
 
     await db.subCategory.delete({ where: { id } })
 

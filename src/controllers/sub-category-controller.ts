@@ -5,6 +5,15 @@ import { type User } from '@prisma/client'
 import type { NextFunction, Response } from 'express'
 
 export class SubCategoryController {
+  static async getAll (req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const response = await SubCategoryService.getAll(req.user as User)
+      res.status(200).json({ data: response })
+    } catch (error) {
+      next(error)
+    }
+  }
+
   static async create (req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const request = req.body as SubCategoryRequest

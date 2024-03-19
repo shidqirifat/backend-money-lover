@@ -30,6 +30,7 @@ apiRouter.put('/api/categories/:id', CategoryController.update)
 apiRouter.delete('/api/categories/:id', CategoryController.delete)
 
 // SUB CATEGORY
+apiRouter.get('/api/sub-categories', SubCategoryController.getAll)
 apiRouter.post('/api/sub-categories', SubCategoryController.create)
 apiRouter.put('/api/sub-categories/:id', SubCategoryController.update)
 apiRouter.delete('/api/sub-categories/:id', SubCategoryController.delete)
@@ -43,8 +44,17 @@ apiRouter.delete('/api/transactions/:id', TransactionController.delete)
 
 // SUMMARY
 apiRouter.get('/api/summaries/wallet', SummaryController.getSummaryWallet)
-apiRouter.get('/api/summaries/transaction', SummaryController.getSummaryTransaction)
-apiRouter.get('/api/summaries/transaction/expense', SummaryController.getSummaryExpense)
-apiRouter.get('/api/summaries/transaction/income', SummaryController.getSummaryIncome)
+apiRouter.get(
+  '/api/summaries/transaction',
+  SummaryController.getSummaryTransaction
+)
+apiRouter.get(
+  '/api/summaries/transaction/expense',
+  SummaryController.getSummaryExpense
+)
+apiRouter.get(
+  '/api/summaries/transaction/income',
+  SummaryController.getSummaryIncome
+)
 
 export default apiRouter
