@@ -152,7 +152,11 @@ export class TransactionService {
       where: { id: transaction.id },
       include: {
         wallet: true,
-        category: true,
+        category: {
+          include: {
+            masterCategoryTransaction: true
+          }
+        },
         subCategory: true
       }
     })
