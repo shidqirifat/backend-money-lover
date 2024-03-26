@@ -1,5 +1,11 @@
 import { type TransactionValidation } from '@/validations/transaction'
-import type { Wallet, Transaction, Category, SubCategory, MasterCategoryTransaction } from '@prisma/client'
+import type {
+  Wallet,
+  Transaction,
+  Category,
+  SubCategory,
+  MasterCategoryTransaction
+} from '@prisma/client'
 import { type z } from 'zod'
 
 type Entity = {
@@ -37,11 +43,15 @@ export type TransactionWithRelation = Transaction & {
   subCategory: SubCategory | null
 }
 
-export const toListTransactionResponse = (transactions: TransactionWithRelation[]): TransactionResponse[] => {
-  return transactions.map(transaction => (toTransactionResponse(transaction)))
+export const toListTransactionResponse = (
+  transactions: TransactionWithRelation[]
+): TransactionResponse[] => {
+  return transactions.map((transaction) => toTransactionResponse(transaction))
 }
 
-export const toTransactionResponse = (transaction: TransactionWithRelation): TransactionResponse => {
+export const toTransactionResponse = (
+  transaction: TransactionWithRelation
+): TransactionResponse => {
   return {
     id: transaction.id,
     amount: transaction.amount,

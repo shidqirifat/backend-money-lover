@@ -1,11 +1,13 @@
 import { ResponseError } from '@/errors/response-error'
 import { TypeTransaction } from '@/models/summary'
+import type {
+  TransactionWithRelation,
+  TransactionRequest,
+  TransactionResponse,
+  ParamsTransaction
+} from '@/models/transaction'
 import {
   toTransactionResponse,
-  type TransactionWithRelation,
-  type TransactionRequest,
-  type TransactionResponse,
-  type ParamsTransaction,
   toListTransactionResponse
 } from '@/models/transaction'
 import { type AuthRequest } from '@/models/user'
@@ -289,7 +291,8 @@ export class TransactionService {
 
   static async delete (user: User, id: number): Promise<string> {
     const transaction = await db.transaction.findFirst({
-      where: { AND: { id, userId: user.id } }
+      where: { AND: { id, userId: user.id } },
+      include: { category: true }
     })
 
     if (!transaction) throw new ResponseError(400, 'Transaction is not found')
@@ -298,11 +301,38 @@ export class TransactionService {
       where: { id: transaction.id }
     })
 
+    const operationExpense = (
+      masterCategoryTransactionId: number,
+      amount: number
+    ) => {
+      if (masterCategoryTransactionId === TypeTransaction.EXPENSE) return {}
+      return {
+        decrement: amount
+      }
+    }
+
+    const operationIncome = (
+      masterCategoryTransactionId: number,
+      amount: number
+    ) => {
+      if (masterCategoryTransactionId === TypeTransaction.INCOME) return {}
+      return {
+        increment: amount
+      }
+    }
+
     await db.wallet.update({
       where: { id: transaction.walletId },
       data: {
         balance: {
-          decrement: transaction.amount
+          ...operationExpense(
+            transaction.category.masterCategoryTransactionId,
+            Number(transaction.amount)
+          ),
+          ...operationIncome(
+            transaction.category.masterCategoryTransactionId,
+            Number(transaction.amount)
+          )
         }
       }
     })
