@@ -1,4 +1,5 @@
 import { ResponseError } from '@/errors/response-error'
+import { TypeTransaction } from '@/models/summary'
 import {
   toTransactionResponse,
   type TransactionWithRelation,
@@ -25,7 +26,9 @@ export class TransactionService {
 
     const optionalParams = () => {
       const optional: Record<string, number> = {}
-      if (validateParams.categoryId) { optional.categoryId = validateParams.categoryId }
+      if (validateParams.categoryId) {
+        optional.categoryId = validateParams.categoryId
+      }
       if (validateParams.walletId) optional.walletId = validateParams.walletId
 
       return optional
@@ -139,14 +142,42 @@ export class TransactionService {
         subCategoryId: validateReq.subCategoryId || null,
         walletId: validateReq.walletId,
         userId: user.id
-      }
+      },
+      include: { category: true }
     })
+
+    const operationExpense = (
+      masterCategoryTransactionId: number,
+      amount: number
+    ) => {
+      if (masterCategoryTransactionId !== TypeTransaction.EXPENSE) return {}
+      return {
+        decrement: amount
+      }
+    }
+
+    const operationIncome = (
+      masterCategoryTransactionId: number,
+      amount: number
+    ) => {
+      if (masterCategoryTransactionId !== TypeTransaction.INCOME) return {}
+      return {
+        increment: amount
+      }
+    }
 
     await db.wallet.update({
       where: { id: transaction.walletId },
       data: {
         balance: {
-          increment: validateReq.amount
+          ...operationExpense(
+            transaction.category.masterCategoryTransactionId,
+            validateReq.amount
+          ),
+          ...operationIncome(
+            transaction.category.masterCategoryTransactionId,
+            validateReq.amount
+          )
         }
       }
     })
@@ -178,7 +209,9 @@ export class TransactionService {
     const id = Number(request.params.id)
 
     const transactionBefore = await db.transaction.findFirst({ where: { id } })
-    if (!transactionBefore) { throw new ResponseError(400, 'Transaction is not found') }
+    if (!transactionBefore) {
+      throw new ResponseError(400, 'Transaction is not found')
+    }
 
     const wallet = await db.wallet.findFirst({
       where: {
