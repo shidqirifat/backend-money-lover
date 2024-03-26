@@ -12,8 +12,8 @@ export type SummaryWalletResponse = {
 }
 
 export type ParamsSummaryTransaction = {
-  startDate: string
-  endDate: string
+  fromDate: string
+  toDate: string
 }
 
 export type SummaryTransactionResponse = {

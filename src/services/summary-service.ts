@@ -34,8 +34,8 @@ export class SummaryService {
         AND: {
           userId: user.id,
           date: {
-            gte: validateParams.startDate,
-            lte: validateParams.endDate
+            gte: validateParams.fromDate,
+            lte: validateParams.toDate
           }
         }
       }
@@ -56,8 +56,8 @@ export class SummaryService {
         AND: {
           userId: user.id,
           date: {
-            gte: validateParams.startDate,
-            lte: validateParams.endDate
+            gte: validateParams.fromDate,
+            lte: validateParams.toDate
           },
           category: {
             masterCategoryTransactionId: TypeTransaction.EXPENSE
@@ -81,8 +81,8 @@ export class SummaryService {
         AND: {
           userId: user.id,
           date: {
-            gte: validateParams.startDate,
-            lte: validateParams.endDate
+            gte: validateParams.fromDate,
+            lte: validateParams.toDate
           },
           category: {
             masterCategoryTransactionId: TypeTransaction.INCOME
