@@ -18,11 +18,14 @@ export class TransactionService {
     user: User,
     params: ParamsTransaction
   ): Promise<TransactionResponse[]> {
-    const validateParams = Validation.validate(TransactionValidation.GET_ALL, params)
+    const validateParams = Validation.validate(
+      TransactionValidation.GET_ALL,
+      params
+    )
 
     const optionalParams = () => {
       const optional: Record<string, number> = {}
-      if (validateParams.categoryId) optional.categoryId = validateParams.categoryId
+      if (validateParams.categoryId) { optional.categoryId = validateParams.categoryId }
       if (validateParams.walletId) optional.walletId = validateParams.walletId
 
       return optional
@@ -166,13 +169,16 @@ export class TransactionService {
 
   static async update (request: AuthRequest): Promise<TransactionResponse> {
     const body = request.body as TransactionRequest
-    const validateReq = Validation.validate(TransactionValidation.UPDATE_TRANSACTION, body)
+    const validateReq = Validation.validate(
+      TransactionValidation.UPDATE_TRANSACTION,
+      body
+    )
 
     const user = request.user as User
     const id = Number(request.params.id)
 
     const transactionBefore = await db.transaction.findFirst({ where: { id } })
-    if (!transactionBefore) throw new ResponseError(400, 'Transaction is not found')
+    if (!transactionBefore) { throw new ResponseError(400, 'Transaction is not found') }
 
     const wallet = await db.wallet.findFirst({
       where: {
@@ -236,7 +242,11 @@ export class TransactionService {
       where: { id: transaction.id },
       include: {
         wallet: true,
-        category: true,
+        category: {
+          include: {
+            masterCategoryTransaction: true
+          }
+        },
         subCategory: true
       }
     })
