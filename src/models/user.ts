@@ -20,6 +20,10 @@ export interface AuthRequest extends Request {
   user?: User
 }
 
+export type UpdateProfileRequest = Omit<RegisterRequest, 'password'> & {
+  password?: string
+}
+
 export function toAuthResponse (user: User): AuthResponse {
   return {
     name: user.name,

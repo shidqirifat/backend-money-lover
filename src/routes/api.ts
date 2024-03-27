@@ -14,6 +14,7 @@ apiRouter.use(authMiddleware)
 
 // AUTH
 apiRouter.get('/api/auth', UserController.get)
+apiRouter.put('/api/auth', UserController.update)
 apiRouter.post('/api/auth/logout', UserController.logout)
 
 // WALLET

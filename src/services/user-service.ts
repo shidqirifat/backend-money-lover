@@ -1,6 +1,11 @@
 import { ResponseError } from '@/errors/response-error'
 import { toAuthResponse } from '@/models/user'
-import type { AuthResponse, LoginRequest, RegisterRequest } from '@/models/user'
+import type {
+  AuthResponse,
+  LoginRequest,
+  RegisterRequest,
+  UpdateProfileRequest
+} from '@/models/user'
 import { comparePassword, hashPassword } from '@/utils/hash'
 import db from '@/utils/prisma'
 import { generateToken } from '@/utils/token'
@@ -41,7 +46,10 @@ export class UserService {
 
     if (!user) throw new ResponseError(400, 'User is not registered yet')
 
-    const isPasswordCorrect = await comparePassword(validateReq.password, user.password)
+    const isPasswordCorrect = await comparePassword(
+      validateReq.password,
+      user.password
+    )
     if (!isPasswordCorrect) {
       throw new ResponseError(400, 'Email or password is not correct')
     }
@@ -58,6 +66,35 @@ export class UserService {
 
   static async get (user: User): Promise<AuthResponse> {
     return toAuthResponse(user)
+  }
+
+  static async update (
+    auth: User,
+    request: UpdateProfileRequest
+  ): Promise<AuthResponse> {
+    const validateReq = Validation.validate(UserValidation.REGISTER, request)
+
+    const user = await db.user.findFirst({
+      where: { email: validateReq.email }
+    })
+
+    // Email is already use for another user
+    if (user && user.id !== auth.id) { throw new ResponseError(400, 'Email is already use') }
+
+    const encryptPassword = validateReq.password
+      ? await hashPassword(validateReq.password)
+      : auth.password
+
+    const authUser = await db.user.update({
+      where: { id: auth.id },
+      data: {
+        name: validateReq.name,
+        email: validateReq.email,
+        password: encryptPassword
+      }
+    })
+
+    return toAuthResponse(authUser)
   }
 
   static async logout (user: User) {
