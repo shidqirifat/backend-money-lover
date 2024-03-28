@@ -19,7 +19,7 @@ apiRouter.post('/api/auth/logout', UserController.logout)
 
 // WALLET
 apiRouter.get('/api/wallets', WalletController.getAll)
-apiRouter.put('/api/wallets/:id', WalletController.updateBalance)
+apiRouter.put('/api/wallets/:id', WalletController.update)
 
 // MASTER CATEGORY
 apiRouter.get('/api/master-categories', MasterCategoryController.getAll)

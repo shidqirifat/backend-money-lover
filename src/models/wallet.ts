@@ -6,9 +6,9 @@ export type WalletResponse = {
   balance: bigint
 }
 
-export type UpdateBalanceParams = { id: number }
+export type UpdateWalletParams = { id: number }
 
-export type UpdateBalanceBody = {
+export type UpdateWalletBody = {
   name: string
   balance: bigint
 }

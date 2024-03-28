@@ -16,9 +16,9 @@ export class WalletController {
     }
   }
 
-  static async updateBalance (req: AuthRequest, res: Response, next: NextFunction) {
+  static async update (req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      const response = await WalletService.updateBalance(req)
+      const response = await WalletService.update(req)
 
       // return json with bigInt value
       res.status(200).type('json').send(json({ data: response }))
