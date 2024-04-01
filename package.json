@@ -9,6 +9,9 @@
     "start:prod": "npm run build && npm run start",
     "build": "npx tsc"
   },
+  "_moduleAliases": {
+    "@": "dist/src"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",

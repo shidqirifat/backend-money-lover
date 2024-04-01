@@ -18,9 +18,10 @@ apiRouter.put('/api/auth', UserController.update)
 apiRouter.post('/api/auth/logout', UserController.logout)
 
 // WALLET
-apiRouter.post('/api/wallets', WalletController.create)
 apiRouter.get('/api/wallets', WalletController.getAll)
+apiRouter.post('/api/wallets', WalletController.create)
 apiRouter.put('/api/wallets/:id', WalletController.update)
+apiRouter.delete('/api/wallets/:id', WalletController.delete)
 
 // MASTER CATEGORY
 apiRouter.get('/api/master-categories', MasterCategoryController.getAll)

@@ -120,4 +120,27 @@ export class WalletService {
 
     return toWalletResponse(walletAfter)
   }
+
+  static async delete (
+    user: User,
+    id: number
+  ): Promise<WalletResponse> {
+    const walletFound = await db.wallet.findFirst({
+      where: {
+        AND: { id, userId: user.id }
+      }
+    })
+
+    if (!walletFound) throw new ResponseError(400, 'Wallet is not exist!')
+
+    await db.transaction.deleteMany({
+      where: { walletId: id }
+    })
+
+    const wallet = await db.wallet.delete({
+      where: { id }
+    })
+
+    return toWalletResponse(wallet)
+  }
 }

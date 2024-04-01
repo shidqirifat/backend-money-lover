@@ -39,4 +39,15 @@ export class WalletController {
       next(error)
     }
   }
+
+  static async delete (req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const response = await WalletService.delete(req.user as User, Number(req.params.id))
+
+      // return json with bigInt value
+      res.status(200).type('json').send(json({ data: response }))
+    } catch (error) {
+      next(error)
+    }
+  }
 }
