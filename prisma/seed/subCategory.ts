@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client'
-import { SEED_CATEGORIES_EXPENSE, SEED_SUB_CATEGORIES } from './data'
+import { SEED_CATEGORIES_EXPENSE, SEED_SUB_CATEGORIES } from '@/utils/seed'
 
 const prisma = new PrismaClient()
 

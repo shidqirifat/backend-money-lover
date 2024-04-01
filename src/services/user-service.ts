@@ -12,7 +12,7 @@ import { generateToken } from '@/utils/token'
 import { UserValidation } from '@/validations/user'
 import { Validation } from '@/validations/validation'
 import { type User } from '@prisma/client'
-import { SEED_CATEGORIES_EXPENSE, SEED_CATEGORIES_INCOME, SEED_SUB_CATEGORIES } from 'prisma/seed/data'
+import { SEED_CATEGORIES_EXPENSE, SEED_CATEGORIES_INCOME, SEED_SUB_CATEGORIES } from '@/utils/seed'
 
 export class UserService {
   static async register (request: RegisterRequest): Promise<AuthResponse> {

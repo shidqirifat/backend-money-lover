@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client'
-import { SEED_MASTER_CATEGORY_TRANSACTIONS } from './data'
+import { SEED_MASTER_CATEGORY_TRANSACTIONS } from '@/utils/seed'
 
 const prisma = new PrismaClient()
 
