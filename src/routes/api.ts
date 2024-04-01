@@ -18,6 +18,7 @@ apiRouter.put('/api/auth', UserController.update)
 apiRouter.post('/api/auth/logout', UserController.logout)
 
 // WALLET
+apiRouter.post('/api/wallets', WalletController.create)
 apiRouter.get('/api/wallets', WalletController.getAll)
 apiRouter.put('/api/wallets/:id', WalletController.update)
 

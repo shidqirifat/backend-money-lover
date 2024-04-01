@@ -1,6 +1,6 @@
 import { ResponseError } from '@/errors/response-error'
 import { type AuthRequest } from '@/models/user'
-import type { WalletResponse, UpdateWalletBody } from '@/models/wallet'
+import type { WalletResponse, WalletRequest } from '@/models/wallet'
 import { toWalletResponse } from '@/models/wallet'
 import db from '@/utils/prisma'
 import { Validation } from '@/validations/validation'
@@ -13,15 +13,49 @@ export class WalletService {
       where: { userId: user.id }
     })
 
-    return wallets.map(wallet => toWalletResponse(wallet))
+    return wallets.map((wallet) => toWalletResponse(wallet))
+  }
+
+  static async create (
+    user: User,
+    request: WalletRequest
+  ): Promise<WalletResponse> {
+    const validateReq = Validation.validate(
+      WalletValidation.UPDATE_WALLET,
+      request
+    )
+
+    const walletFound = await db.wallet.findFirst({
+      where: {
+        AND: {
+          name: { contains: request.name },
+          userId: user.id
+        }
+      }
+    })
+
+    if (walletFound) throw new ResponseError(400, 'Wallet name is already exist!')
+
+    const wallet = await db.wallet.create({
+      data: {
+        name: validateReq.name,
+        balance: validateReq.balance,
+        userId: user.id
+      }
+    })
+
+    return toWalletResponse(wallet)
   }
 
   static async update (request: AuthRequest): Promise<WalletResponse> {
-    const body = request.body as UpdateWalletBody
+    const body = request.body as WalletRequest
     const params = { id: Number(request.params.id) }
     const user = request.user as User
 
-    const validateReq = Validation.validate(WalletValidation.UPDATE_WALLET, body)
+    const validateReq = Validation.validate(
+      WalletValidation.UPDATE_WALLET,
+      body
+    )
 
     const wallet = await db.wallet.findFirst({
       where: { AND: { id: params.id, userId: user.id } }
@@ -45,7 +79,7 @@ export class WalletService {
         }
       })
 
-      if (!categoryOtherExpense) throw new ResponseError(500, 'Other expense is not exist')
+      if (!categoryOtherExpense) { throw new ResponseError(500, 'Other expense is not exist') }
 
       await db.transaction.create({
         data: {
@@ -69,7 +103,7 @@ export class WalletService {
         }
       })
 
-      if (!categoryOtherIncome) throw new ResponseError(500, 'Other income is not exist')
+      if (!categoryOtherIncome) { throw new ResponseError(500, 'Other income is not exist') }
 
       await db.transaction.create({
         data: {

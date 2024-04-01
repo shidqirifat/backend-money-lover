@@ -61,13 +61,13 @@ model SubCategory {
 
 model Wallet {
   id           Int           @id @default(autoincrement())
+  userId       Int
   name         String        @db.VarChar(255)
   balance      BigInt
-  userId       Int           @unique
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
   transactions Transaction[]
   user         User          @relation(fields: [userId], references: [id])
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
 
   @@map("wallets")
 }
