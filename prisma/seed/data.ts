@@ -1,6 +1,6 @@
 export const SEED_MASTER_CATEGORY_TRANSACTIONS = ['Expense', 'Income', 'Debt/Loan']
 
-export const SEED_CATEGORIES_EXPENSE = ['Bills and Utilities', 'Food and Beverage', 'Family', 'Health and Fitness']
+export const SEED_CATEGORIES_EXPENSE = ['Bills and Utilities', 'Food and Beverage', 'Family', 'Health and Fitness', 'Other Expense']
 
 export const SEED_CATEGORIES_INCOME = ['Sallary', 'Side Hustle', 'Other Income']
 

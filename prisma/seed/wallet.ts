@@ -26,7 +26,7 @@ export async function seedWallet () {
   const wallet = await prisma.wallet.create({
     data: {
       name: 'Cash',
-      balance: 50_000,
+      balance: 0,
       userId: user.id
     }
   })
