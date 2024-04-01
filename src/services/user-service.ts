@@ -12,6 +12,7 @@ import { generateToken } from '@/utils/token'
 import { UserValidation } from '@/validations/user'
 import { Validation } from '@/validations/validation'
 import { type User } from '@prisma/client'
+import { SEED_CATEGORIES_EXPENSE, SEED_CATEGORIES_INCOME, SEED_SUB_CATEGORIES } from 'prisma/seed/data'
 
 export class UserService {
   static async register (request: RegisterRequest): Promise<AuthResponse> {
@@ -31,6 +32,49 @@ export class UserService {
         email: validateReq.email,
         password: encryptPassword,
         token: generateToken()
+      }
+    })
+
+    await db.category.createMany({
+      data: [
+        ...SEED_CATEGORIES_EXPENSE.map(category => (
+          {
+            name: category,
+            userId: authUser.id,
+            masterCategoryTransactionId: 1
+          })),
+        ...SEED_CATEGORIES_INCOME.map(category => (
+          {
+            name: category,
+            userId: authUser.id,
+            masterCategoryTransactionId: 2
+          }))
+      ]
+    })
+
+    const userCategories = await db.category.findMany({
+      where: {
+        user: { id: authUser.id }
+      }
+    })
+
+    for (const category of userCategories) {
+      if (!SEED_CATEGORIES_EXPENSE.includes(category.name)) continue
+      if (!SEED_SUB_CATEGORIES[category.name]) continue
+
+      await db.subCategory.createMany({
+        data: SEED_SUB_CATEGORIES[category.name].map(subCategory => ({
+          name: subCategory,
+          categoryId: category.id
+        }))
+      })
+    }
+
+    await db.wallet.create({
+      data: {
+        name: 'Cash',
+        balance: 0,
+        userId: authUser.id
       }
     })
 
