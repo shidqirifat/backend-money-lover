@@ -3,6 +3,7 @@ import {
   toSubCategoryResponse,
   type SubCategoryRequest
 } from '@/models/sub-category'
+import { TypeTransaction } from '@/models/summary'
 import { type AuthRequest } from '@/models/user'
 import db from '@/utils/prisma'
 import { SubCategoryValidation } from '@/validations/sub-category'
@@ -91,10 +92,10 @@ export class SubCategoryService {
   }
 
   static async delete (user: User, id: number) {
-    const subCategoryBefore = await db.subCategory.findFirst({
+    const subCategory = await db.subCategory.findFirst({
       where: { id }
     })
-    if (!subCategoryBefore) {
+    if (!subCategory) {
       throw new ResponseError(400, 'Sub category is not found')
     }
 
@@ -105,7 +106,56 @@ export class SubCategoryService {
       throw new ResponseError(400, 'Sub category is not found')
     }
 
-    await db.subCategory.delete({ where: { id } })
+    const transactions = await db.transaction.findMany({
+      where: { subCategoryId: subCategory.id },
+      include: { category: true }
+    })
+
+    const wallets: Array<{ id: number, decrement: number }> = []
+    for (const transaction of transactions) {
+      const index = wallets.findIndex(
+        (wallet) => wallet.id === transaction.walletId
+      )
+      const amount = Number(transaction.amount)
+      const { masterCategoryTransactionId } = transaction.category
+      if (index === -1) {
+        wallets.push({
+          id: transaction.walletId,
+          decrement:
+            masterCategoryTransactionId === TypeTransaction.EXPENSE
+              ? amount
+              : 0 - amount
+        })
+      } else {
+        switch (masterCategoryTransactionId) {
+          case TypeTransaction.EXPENSE:
+            wallets[index].decrement += amount
+            break
+          case TypeTransaction.INCOME:
+            wallets[index].decrement -= amount
+            break
+          default:
+            wallets[index].decrement += 0
+        }
+      }
+    }
+
+    for (const wallet of wallets) {
+      await db.wallet.update({
+        where: { id: wallet.id },
+        data: {
+          balance: { increment: wallet.decrement }
+        }
+      })
+    }
+
+    await db.transaction.deleteMany({
+      where: { subCategoryId: subCategory.id }
+    })
+
+    await db.subCategory.deleteMany({
+      where: { id: subCategory.id }
+    })
 
     return 'Successfully delete sub category'
   }
